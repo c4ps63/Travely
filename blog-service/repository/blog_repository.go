@@ -7,7 +7,6 @@ import (
 	"github.com/c4ps63/travely/blog-service/config"
 	"github.com/c4ps63/travely/blog-service/model"
 	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -19,7 +18,7 @@ func Create(blog *model.Blog) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	blog.ID = primitive.NewObjectID()
+	blog.ID = bson.NewObjectID()
 	_, err := collection().InsertOne(ctx, blog)
 	return err
 }
@@ -45,7 +44,7 @@ func FindByID(id string) (*model.Blog, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	objID, err := primitive.ObjectIDFromHex(id)
+	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}

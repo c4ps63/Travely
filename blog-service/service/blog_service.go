@@ -5,7 +5,7 @@ import (
 
 	"github.com/c4ps63/travely/blog-service/model"
 	"github.com/c4ps63/travely/blog-service/repository"
-	"go.mongodb.org/mongo-driver/v2/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type CreateBlogRequest struct {
@@ -19,7 +19,7 @@ func CreateBlog(authorUsername string, req CreateBlogRequest) (*model.Blog, erro
 		AuthorUsername: authorUsername,
 		Title:          req.Title,
 		Description:    req.Description,
-		CreatedAt:      primitive.NewDateTimeFromTime(time.Now()),
+		CreatedAt:      bson.NewDateTimeFromTime(time.Now()),
 		Images:         req.Images,
 	}
 	if blog.Images == nil {

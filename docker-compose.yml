@@ -74,6 +74,33 @@ services:
     networks:
       - travely-network
 
+  postgres-purchase:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: travely_purchase
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    volumes:
+      - postgres-purchase-data:/var/lib/postgresql/data
+    networks:
+      - travely-network
+
+  purchase-service:
+    build:
+      context: ./purchase-service
+    ports:
+      - "8004:8004"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-purchase:5432/travely_purchase
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      TOUR_SERVICE_URL: http://tour-service:8003
+    depends_on:
+      - postgres-purchase
+      - tour-service
+    networks:
+      - travely-network
+
   neo4j:
     image: neo4j:2025
     environment:
@@ -124,4 +151,5 @@ volumes:
   postgres-stakeholders-data:
   mongodb-data:
   postgres-tours-data:
+  postgres-purchase-data:
   neo4j-data:

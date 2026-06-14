@@ -42,8 +42,10 @@ services:
     environment:
       MONGO_URI: mongodb://mongodb:27017
       MONGO_DB: travely_blog
+      FOLLOWER_SERVICE_URL: http://follower-service:8005
     depends_on:
       - mongodb
+      - follower-service
     networks:
       - travely-network
 
@@ -72,6 +74,29 @@ services:
     networks:
       - travely-network
 
+  neo4j:
+    image: neo4j:2025
+    environment:
+      NEO4J_AUTH: neo4j/root12345
+    volumes:
+      - neo4j-data:/data
+    networks:
+      - travely-network
+
+  follower-service:
+    build:
+      context: ./follower-service
+    ports:
+      - "8005:8005"
+    environment:
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: root12345
+    depends_on:
+      - neo4j
+    networks:
+      - travely-network
+
   gateway:
     build:
       context: ./gateway
@@ -86,6 +111,8 @@ services:
     depends_on:
       - stakeholders-service
       - blog-service
+      - tour-service
+      - follower-service
     networks:
       - travely-network
 
@@ -97,3 +124,4 @@ volumes:
   postgres-stakeholders-data:
   mongodb-data:
   postgres-tours-data:
+  neo4j-data:

@@ -40,6 +40,23 @@ func FindAll() ([]model.Blog, error) {
 	return blogs, nil
 }
 
+func FindByAuthors(authors []string) ([]model.Blog, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := collection().Find(ctx, bson.M{"author_username": bson.M{"$in": authors}})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var blogs []model.Blog
+	if err := cursor.All(ctx, &blogs); err != nil {
+		return nil, err
+	}
+	return blogs, nil
+}
+
 func FindByID(id string) (*model.Blog, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

@@ -32,7 +32,7 @@ public class Tour {
     @Column(nullable = false)
     private TourDifficulty difficulty;
 
-    @ElementCollection
+    @ElementCollection(fetch = jakarta.persistence.FetchType.EAGER)
     @CollectionTable(name = "tour_tags", joinColumns = @JoinColumn(name = "tour_id"))
     @Column(name = "tag")
     private List<String> tags;

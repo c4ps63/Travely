@@ -32,8 +32,12 @@ func CreateBlog(authorUsername string, req CreateBlogRequest) (*model.Blog, erro
 	return blog, nil
 }
 
-func GetAllBlogs() ([]model.Blog, error) {
-	return repository.FindAll()
+func GetAllBlogs(username string) ([]model.Blog, error) {
+	following, err := GetFollowing(username)
+	if err != nil || len(following) == 0 {
+		return []model.Blog{}, nil
+	}
+	return repository.FindByAuthors(following)
 }
 
 func GetBlogByID(id string) (*model.Blog, error) {

@@ -25,7 +25,8 @@ func CreateBlog(c *gin.Context) {
 }
 
 func GetAllBlogs(c *gin.Context) {
-	blogs, err := service.GetAllBlogs()
+	username := c.GetString("username")
+	blogs, err := service.GetAllBlogs(username)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Greška pri dohvatanju blogova"})
 		return

@@ -28,4 +28,23 @@ public class TourController {
             @RequestHeader("X-Username") String username) {
         return ResponseEntity.ok(tourService.getMyTours(username));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Tour> getTour(@PathVariable Long id) {
+        return ResponseEntity.ok(tourService.getTour(id));
+    }
+
+    @PatchMapping("/{id}/publish")
+    public ResponseEntity<Tour> publishTour(
+            @PathVariable Long id,
+            @RequestHeader("X-Username") String username) {
+        return ResponseEntity.ok(tourService.publishTour(id, username));
+    }
+
+    @PatchMapping("/{id}/archive")
+    public ResponseEntity<Tour> archiveTour(
+            @PathVariable Long id,
+            @RequestHeader("X-Username") String username) {
+        return ResponseEntity.ok(tourService.archiveTour(id, username));
+    }
 }

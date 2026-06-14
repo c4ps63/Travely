@@ -25,9 +25,32 @@ services:
     networks:
       - travely-network
 
+  mongodb:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_DATABASE: travely_blog
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - travely-network
+
+  blog-service:
+    build:
+      context: ./blog-service
+    ports:
+      - "8002:8002"
+    environment:
+      MONGO_URI: mongodb://mongodb:27017
+      MONGO_DB: travely_blog
+    depends_on:
+      - mongodb
+    networks:
+      - travely-network
+
 networks:
   travely-network:
     driver: bridge
 
 volumes:
   postgres-stakeholders-data:
+  mongodb-data:

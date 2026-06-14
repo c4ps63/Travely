@@ -47,6 +47,23 @@ services:
     networks:
       - travely-network
 
+  gateway:
+    build:
+      context: ./gateway
+    ports:
+      - "8000:8000"
+    environment:
+      JWT_SECRET: travely-secret-key-which-must-be-at-least-256-bits-long-for-hs256
+      STAKEHOLDERS_URL: http://stakeholders-service:8001
+      BLOG_URL: http://blog-service:8002
+      TOUR_URL: http://tour-service:8003
+      FOLLOWER_URL: http://follower-service:8005
+    depends_on:
+      - stakeholders-service
+      - blog-service
+    networks:
+      - travely-network
+
 networks:
   travely-network:
     driver: bridge

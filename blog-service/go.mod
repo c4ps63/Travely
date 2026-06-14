@@ -1,6 +1,6 @@
 module github.com/c4ps63/travely/blog-service
 
-go 1.26.4
+go 1.24
 
 require (
 	github.com/bytedance/gopkg v0.1.3 // indirect

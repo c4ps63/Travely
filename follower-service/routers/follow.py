@@ -48,6 +48,20 @@ def get_following(x_username: str = Header(...)):
         return [record["username"] for record in result]
 
 
+@router.get("/recommendations")
+def get_recommendations(x_username: str = Header(...)):
+    with get_session() as session:
+        result = session.run(
+            """
+            MATCH (me:User {username: $me})-[:FOLLOWS]->(friend)-[:FOLLOWS]->(suggestion)
+            WHERE NOT (me)-[:FOLLOWS]->(suggestion) AND suggestion.username <> $me
+            RETURN DISTINCT suggestion.username AS username
+            """,
+            me=x_username
+        )
+        return [record["username"] for record in result]
+
+
 @router.get("/follow/check/{username}")
 def check_following(username: str, x_username: str = Header(...)):
     with get_session() as session:

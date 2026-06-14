@@ -46,3 +46,18 @@ def get_following(x_username: str = Header(...)):
             me=x_username
         )
         return [record["username"] for record in result]
+
+
+@router.get("/follow/check/{username}")
+def check_following(username: str, x_username: str = Header(...)):
+    with get_session() as session:
+        result = session.run(
+            """
+            RETURN EXISTS {
+                MATCH (me:User {username: $me})-[:FOLLOWS]->(other:User {username: $other})
+            } AS is_following
+            """,
+            me=x_username, other=username
+        )
+        record = result.single()
+        return {"isFollowing": record["is_following"]}

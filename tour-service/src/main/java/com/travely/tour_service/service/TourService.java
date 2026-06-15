@@ -28,4 +28,27 @@ public class TourService {
     public List<Tour> getMyTours(String authorUsername) {
         return tourRepository.findByAuthorUsername(authorUsername);
     }
+
+    public Tour getTour(Long id) {
+        return tourRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tura nije pronađena."));
+    }
+
+    public Tour publishTour(Long id, String username) {
+        Tour tour = getTour(id);
+        if (!tour.getAuthorUsername().equals(username)) {
+            throw new IllegalArgumentException("Nemate pravo da objavljujete ovu turu.");
+        }
+        tour.setStatus(com.travely.tour_service.model.TourStatus.PUBLISHED);
+        return tourRepository.save(tour);
+    }
+
+    public Tour archiveTour(Long id, String username) {
+        Tour tour = getTour(id);
+        if (!tour.getAuthorUsername().equals(username)) {
+            throw new IllegalArgumentException("Nemate pravo da arhivirate ovu turu.");
+        }
+        tour.setStatus(com.travely.tour_service.model.TourStatus.ARCHIVED);
+        return tourRepository.save(tour);
+    }
 }

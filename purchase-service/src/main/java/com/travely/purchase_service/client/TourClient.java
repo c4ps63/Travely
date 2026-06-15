@@ -1,13 +1,14 @@
 package com.travely.purchase_service.client;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -18,24 +19,29 @@ public class TourClient {
 
     private final RestTemplate restTemplate;
 
-    public JsonNode getTour(Long tourId) {
-        return restTemplate.getForObject(tourServiceUrl + "/tours/" + tourId, JsonNode.class);
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getTour(Long tourId) {
+        return restTemplate.getForObject(tourServiceUrl + "/tours/" + tourId, Map.class);
     }
 
-    public List<JsonNode> getKeypoints(Long tourId) {
-        JsonNode[] keypoints = restTemplate.getForObject(
-                tourServiceUrl + "/tours/" + tourId + "/keypoints", JsonNode[].class);
-        return keypoints != null ? Arrays.asList(keypoints) : List.of();
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> getKeypoints(Long tourId) {
+        Map[] keypoints = restTemplate.getForObject(
+                tourServiceUrl + "/tours/" + tourId + "/keypoints", Map[].class);
+        if (keypoints == null) return List.of();
+        return Arrays.stream(keypoints).map(m -> (Map<String, Object>) m).toList();
     }
 
-    public JsonNode getPosition(String username) {
-        var headers = new org.springframework.http.HttpHeaders();
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getPosition(String username) {
+        HttpHeaders headers = new HttpHeaders();
         headers.set("X-Username", username);
-        var entity = new org.springframework.http.HttpEntity<>(headers);
-        return restTemplate.exchange(
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        ResponseEntity<Map> response = restTemplate.exchange(
                 tourServiceUrl + "/position",
-                org.springframework.http.HttpMethod.GET,
+                HttpMethod.GET,
                 entity,
-                JsonNode.class).getBody();
+                Map.class);
+        return response.getBody();
     }
 }

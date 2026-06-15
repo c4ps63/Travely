@@ -37,6 +37,7 @@ public class TourExecution {
 
     private LocalDateTime lastActivity;
 
+    @Builder.Default
     @OneToMany(mappedBy = "execution", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CompletedKeypoint> completedKeypoints = new ArrayList<>();
 }

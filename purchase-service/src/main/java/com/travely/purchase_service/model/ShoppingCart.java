@@ -25,6 +25,7 @@ public class ShoppingCart {
     @Column(nullable = false)
     private Double totalPrice;
 
+    @Builder.Default
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<OrderItem> items = new ArrayList<>();
 

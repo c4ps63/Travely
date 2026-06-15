@@ -1,6 +1,5 @@
 package com.travely.purchase_service.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.travely.purchase_service.client.TourClient;
 import com.travely.purchase_service.model.CompletedKeypoint;
 import com.travely.purchase_service.model.ExecutionStatus;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -46,25 +46,25 @@ public class ExecutionService {
             throw new IllegalArgumentException("Sesija nije aktivna.");
         }
 
-        JsonNode position = tourClient.getPosition(username);
-        if (position == null || position.has("error")) {
+        Map<String, Object> position = tourClient.getPosition(username);
+        if (position == null || position.containsKey("error")) {
             execution.setLastActivity(LocalDateTime.now());
             return executionRepository.save(execution);
         }
 
-        double lat = position.get("latitude").asDouble();
-        double lng = position.get("longitude").asDouble();
+        double lat = ((Number) position.get("latitude")).doubleValue();
+        double lng = ((Number) position.get("longitude")).doubleValue();
 
-        List<JsonNode> keypoints = tourClient.getKeypoints(execution.getTourId());
+        List<Map<String, Object>> keypoints = tourClient.getKeypoints(execution.getTourId());
 
-        for (JsonNode kp : keypoints) {
-            Long kpId = kp.get("id").asLong();
+        for (Map<String, Object> kp : keypoints) {
+            Long kpId = ((Number) kp.get("id")).longValue();
             boolean alreadyCompleted = execution.getCompletedKeypoints().stream()
                     .anyMatch(ck -> ck.getKeypointId().equals(kpId));
             if (alreadyCompleted) continue;
 
-            double kpLat = kp.get("latitude").asDouble();
-            double kpLng = kp.get("longitude").asDouble();
+            double kpLat = ((Number) kp.get("latitude")).doubleValue();
+            double kpLng = ((Number) kp.get("longitude")).doubleValue();
 
             if (distanceMeters(lat, lng, kpLat, kpLng) <= PROXIMITY_METERS) {
                 CompletedKeypoint completed = CompletedKeypoint.builder()
